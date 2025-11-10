@@ -1,19 +1,20 @@
+// server/database/server.js
 const { Sequelize } = require("sequelize");
-const models = require("./models");
+const path = require("path");
 
 const sequelize = new Sequelize({
   dialect: "sqlite",
-  storage: "database/db.sqlite",
+  storage: path.join(__dirname, "db.sqlite"), // ✅ cale completă
   logging: false,
 });
 
 sequelize
-  .sync({ alter: true })
+  .sync()
   .then(() => {
     console.log("✅ Models successfully (re)created.");
   })
   .catch((err) => {
-    console.log("❌ Database error:", err);
+    console.error("❌ Database sync error:", err);
   });
 
-module.exports = { sequelize, models };
+module.exports = sequelize; // ✅ exportă doar instanța

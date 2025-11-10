@@ -61,10 +61,8 @@ router.get("/fetch", async (req, res) => {
         to: legGo?.destination?.name || "Necunoscut",
         departDate: legGo?.departure,
         returnDate: legReturn?.departure || null,
-        airline:
-          legGo?.carriers?.marketing?.[0]?.name || "Companie necunoscută",
-        airlineReturn:
-          legReturn?.carriers?.marketing?.[0]?.name || "Companie necunoscută",
+        airline: legGo?.carriers?.marketing?.[0]?.name || "Companie necunoscută",
+        airlineReturn: legReturn?.carriers?.marketing?.[0]?.name || "Companie necunoscută",
         price: it.price?.raw || 0,
       };
     });
@@ -86,8 +84,9 @@ router.get("/fetch", async (req, res) => {
       .sort((a, b) => a.price - b.price)
       .slice(0, 20);
 
-    // 💾 Salvăm în baza de date doar dacă nu există deja
+    // 💾 Salvăm în baza de date și returnăm `id`-ul real pentru fiecare zbor
     let addedCount = 0;
+
     for (const f of limitedFlights) {
       const exists = await Flight.findOne({
         where: {
@@ -102,7 +101,7 @@ router.get("/fetch", async (req, res) => {
       });
 
       if (!exists) {
-        await Flight.create({
+        const newFlight = await Flight.create({
           from: f.from,
           to: f.to,
           date: f.departDate,
@@ -111,7 +110,10 @@ router.get("/fetch", async (req, res) => {
           airline_return: f.airlineReturn,
           price: f.price,
         });
+        f.id = newFlight.id; // ✅ ID-ul nou creat
         addedCount++;
+      } else {
+        f.id = exists.id; // ✅ ID-ul existent (dacă zborul era deja salvat)
       }
     }
 
@@ -180,9 +182,7 @@ router.get("/html", async (req, res) => {
           <td>${f.from}</td>
           <td>${f.to}</td>
           <td>${new Date(f.date).toLocaleString()}</td>
-          <td>${
-            f.return_date ? new Date(f.return_date).toLocaleString() : "-"
-          }</td>
+          <td>${f.return_date ? new Date(f.return_date).toLocaleString() : "-"}</td>
           <td>${f.airline}</td>
           <td>${f.airline_return}</td>
           <td>${f.price}$</td>
@@ -216,79 +216,108 @@ router.get("/html", async (req, res) => {
     res.status(500).send("<h3>Eroare la afișarea datelor.</h3>");
   }
 });
-
-/* 🔹🔹🔹 CRUD MANUAL PENTRU ZBORURI 🔹🔹🔹 */
-
-// 🔸 POST - Creează un zbor manual
-// 🔸 POST - Creează un zbor manual (cu log detaliat)
-// 🔸 POST - Creează un zbor manual (cu conversii corecte)
+/**
+ * 🟢 POST /flights — Creează un zbor nou în baza de date
+ */
 router.post("/", async (req, res) => {
   try {
-    const { id, from, to, date, return_date, airline, airline_return, price } = req.body;
+    const { from, to, date, return_date, airline, airline_return, price } = req.body;
 
     if (!from || !to || !date || !airline || !price) {
       return res.status(400).json({
         success: false,
-        message: "Câmpuri obligatorii lipsă: from, to, date, airline, price",
+        message: "Câmpuri obligatorii lipsă (from, to, date, airline, price).",
       });
     }
 
-    const flight = await Flight.create({
+    const newFlight = await Flight.create({
       from,
       to,
-      date: new Date(date), // ✅ convertim string → Date
-      return_date: return_date ? new Date(return_date) : null,
+      date,
+      return_date: return_date || null,
       airline,
       airline_return: airline_return || null,
-      price: parseFloat(price), // ✅ convertim string → float
+      price,
     });
 
-    res.json({ success: true, message: "Zbor creat ✅", data: flight });
-  } catch (err) {
-    console.error("❌ Eroare la crearea zborului:", err);
+    res.status(201).json({
+      success: true,
+      message: "Zbor adăugat cu succes ✈️",
+      data: newFlight,
+    });
+  } catch (error) {
+    console.error("❌ Eroare la POST /flights:", error);
     res.status(500).json({
       success: false,
-      message: "Eroare la creare zbor",
-      error: err.message,
+      message: "Eroare la adăugarea zborului.",
+      error: error.message,
     });
   }
 });
 
-
-
-// 🔸 PUT - Actualizează un zbor
+/**
+ * 🟣 PUT /flights/:id — Actualizează un zbor existent
+ */
 router.put("/:id", async (req, res) => {
   try {
-    const flight = await Flight.findByPk(req.params.id);
-    if (!flight)
-      return res
-        .status(404)
-        .json({ success: false, message: "Zborul nu există" });
+    const { id } = req.params;
+    const updates = req.body;
 
-    await flight.update(req.body);
-    res.json({ success: true, message: "Zbor actualizat ✅", data: flight });
-  } catch (err) {
-    res
-      .status(500)
-      .json({ success: false, message: "Eroare la actualizare", error: err.message });
+    const flight = await Flight.findByPk(id);
+    if (!flight) {
+      return res.status(404).json({
+        success: false,
+        message: `Zborul cu ID ${id} nu există.`,
+      });
+    }
+
+    await flight.update(updates);
+
+    res.json({
+      success: true,
+      message: "Zbor actualizat cu succes ✅",
+      data: flight,
+    });
+  } catch (error) {
+    console.error("❌ Eroare la PUT /flights/:id:", error);
+    res.status(500).json({
+      success: false,
+      message: "Eroare la actualizarea zborului.",
+      error: error.message,
+    });
   }
 });
 
-// 🔸 DELETE - Șterge un zbor
+/**
+ * 🔴 DELETE /flights/:id — Șterge un zbor
+ */
 router.delete("/:id", async (req, res) => {
   try {
-    const deleted = await Flight.destroy({ where: { id: req.params.id } });
-    if (!deleted)
-      return res
-        .status(404)
-        .json({ success: false, message: "Zborul nu există" });
+    const { id } = req.params;
+    const flight = await Flight.findByPk(id);
 
-    res.json({ success: true, message: "Zbor șters ✅" });
-  } catch (err) {
-    res
-      .status(500)
-      .json({ success: false, message: "Eroare la ștergere", error: err.message });
+    if (!flight) {
+      return res.status(404).json({
+        success: false,
+        message: `Zborul cu ID ${id} nu a fost găsit.`,
+      });
+    }
+
+    await flight.destroy();
+
+    res.json({
+      success: true,
+      message: "Zbor șters cu succes ❌",
+    });
+  } catch (error) {
+    console.error("❌ Eroare la DELETE /flights/:id:", error);
+    res.status(500).json({
+      success: false,
+      message: "Eroare la ștergerea zborului.",
+      error: error.message,
+    });
   }
 });
+
 
 module.exports = router;

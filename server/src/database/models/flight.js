@@ -1,4 +1,4 @@
-const { sequelize } = require("../server");
+const sequelize = require("../server");
 const { DataTypes } = require("sequelize");
 
 const Flight = sequelize.define(

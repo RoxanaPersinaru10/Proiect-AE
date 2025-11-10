@@ -1,5 +1,6 @@
-const { sequelize } = require("../server");
+// server/src/database/models/booking.js
 const { DataTypes } = require("sequelize");
+const sequelize = require("../server");
 const User = require("./user");
 const Flight = require("./flight");
 
@@ -11,23 +12,23 @@ const Booking = sequelize.define(
       primaryKey: true,
       autoIncrement: true,
     },
-    userId: {
+    user_id: {
       type: DataTypes.INTEGER,
       allowNull: false,
+      references: { model: "users", key: "id" },
     },
-    flightId: {
+    flight_id: {
       type: DataTypes.INTEGER,
       allowNull: false,
+      references: { model: "flights", key: "id" },
     },
-    seats: {
+    quantity: {
       type: DataTypes.INTEGER,
-      allowNull: false,
       defaultValue: 1,
     },
     status: {
-      type: DataTypes.ENUM("confirmed", "cancelled", "pending"),
-      allowNull: false,
-      defaultValue: "pending",
+      type: DataTypes.STRING,
+      defaultValue: "plasată", // ex: plasată, confirmată, anulată
     },
   },
   {
@@ -37,5 +38,12 @@ const Booking = sequelize.define(
     updatedAt: "updated_at",
   }
 );
+
+// 🔗 Relații
+User.hasMany(Booking, { foreignKey: "user_id" });
+Booking.belongsTo(User, { foreignKey: "user_id" });
+
+Flight.hasMany(Booking, { foreignKey: "flight_id" });
+Booking.belongsTo(Flight, { foreignKey: "flight_id" });
 
 module.exports = Booking;

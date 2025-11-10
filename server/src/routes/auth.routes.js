@@ -76,6 +76,8 @@ router.post("/login", async (req, res) => {
       return res
         .status(400)
         .json({ success: false, message: "Parolă incorectă." });
+    
+    console.log("🔐 TOKEN_SECRET la LOGIN:", process.env.TOKEN_SECRET);
 
     // generăm tokenul JWT
     const token = jwt.sign(

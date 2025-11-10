@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import Autosuggest from "react-autosuggest";
+import { useNavigate } from "react-router-dom";
 
 function SearchBar() {
   const [from, setFrom] = useState("");
@@ -8,6 +9,11 @@ function SearchBar() {
   const [ret, setRet] = useState("");
   const [passengers, setPassengers] = useState(1);
   const [flights, setFlights] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [message, setMessage] = useState("");
+  const navigate = useNavigate(); // 🧭 pentru redirecționare
+
+  const token = localStorage.getItem("token");
 
   // 📍 Lista de aeroporturi pentru autocomplete
   const airports = [
@@ -22,7 +28,7 @@ function SearchBar() {
     { code: "IST", name: "Istanbul Airport" },
   ];
 
-  // 🔍 Funcții pentru Autosuggest
+  // 🔍 Autosuggest logic
   const getSuggestions = (value) => {
     const input = value.trim().toLowerCase();
     return input.length === 0
@@ -46,12 +52,10 @@ function SearchBar() {
   const [toSuggestions, setToSuggestions] = useState([]);
 
   // 🟢 Căutare zboruri
-  const [loading, setLoading] = useState(false);
-
   const handleSearch = async (e) => {
     e.preventDefault();
 
-    if (loading) return; // 🧱 oprește apelurile multiple
+    if (loading) return;
 
     if (!from || !to || !depart || !ret) {
       alert("Completează toate câmpurile!");
@@ -59,7 +63,7 @@ function SearchBar() {
     }
 
     setFlights([]);
-    setLoading(true); // 🔵 marcam că începe căutarea
+    setLoading(true);
 
     const url = `http://localhost:3000/flights/fetch?from=${from}&to=${to}&depart=${depart}&ret=${ret}&adults=${passengers}`;
 
@@ -88,10 +92,53 @@ function SearchBar() {
       console.error("Eroare la căutarea zborurilor:", error);
       alert("Eroare la conexiunea cu serverul.");
     } finally {
-      setLoading(false); // 🔵 căutarea s-a terminat
+      setLoading(false);
     }
   };
 
+  // 🟣 Adaugă un zbor în coș și redirecționează către /cart
+  const handleAddToCart = async (flight) => {
+    if (!token) {
+      alert("Trebuie să fii autentificat pentru a adăuga în coș!");
+      return;
+    }
+
+    if (!flight.id) {
+      setMessage("Eroare: acest zbor nu are ID din baza de date.");
+      return;
+    }
+
+    try {
+      const res = await fetch("http://localhost:3000/cart/add", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          flight_id: flight.id,
+          quantity: 1,
+        }),
+      });
+
+      const data = await res.json();
+
+      if (data.success) {
+        setMessage("✈️ Zbor adăugat în coș ✅ Redirecționare...");
+        // 🔁 Redirecționează către pagina de coș după 1s
+        setTimeout(() => {
+          navigate("/cart");
+        }, 1000);
+      } else {
+        setMessage(data.message || "Eroare la adăugare în coș ❌");
+      }
+    } catch (err) {
+      console.error("Eroare la adăugare în coș:", err);
+      setMessage("Eroare de rețea la adăugare în coș.");
+    }
+
+    setTimeout(() => setMessage(""), 4000);
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-blue-50 to-blue-100 flex flex-col items-center py-12 px-4">
@@ -99,7 +146,7 @@ function SearchBar() {
         Caută bilete de avion ✈️
       </h1>
 
-      {/* 🔹 Formular de căutare */}
+      {/* Formular de căutare */}
       <form
         onSubmit={handleSearch}
         className="bg-white shadow-lg rounded-2xl p-6 flex flex-wrap justify-center gap-6 max-w-6xl w-full"
@@ -185,11 +232,15 @@ function SearchBar() {
           type="submit"
           className="bg-blue-600 text-white px-8 py-4 rounded-2xl text-lg font-semibold hover:bg-blue-700 transition-all self-end md:self-center"
         >
-          Caută zboruri
+          {loading ? "Caut..." : "Caută zboruri"}
         </button>
       </form>
 
-      {/* 🔹 Rezultate */}
+      {message && (
+        <p className="mt-4 text-green-600 font-semibold">{message}</p>
+      )}
+
+      {/* Rezultate */}
       <div className="mt-10 grid gap-4 w-full max-w-5xl">
         {flights.length > 0 ? (
           flights.map((f, idx) => (
@@ -201,26 +252,35 @@ function SearchBar() {
                 <p className="text-lg font-semibold text-gray-800">
                   {f.from} → {f.to}
                 </p>
-
                 <p className="text-gray-600">
                   <b>Plecare:</b> {new Date(f.departDate).toLocaleString()}
                 </p>
-
                 {f.returnDate && (
                   <p className="text-gray-600">
                     <b>Întoarcere:</b> {new Date(f.returnDate).toLocaleString()}
                   </p>
                 )}
-
                 <p className="text-blue-700 mt-1">
                   {f.airline} {f.airlineReturn && `/ ${f.airlineReturn}`}
                 </p>
               </div>
 
-              <div className="text-right">
+              <div className="text-right flex flex-col items-end gap-2">
                 <p className="text-2xl font-bold text-green-600">
                   {f.price.toFixed(2)}$
                 </p>
+                {token ? (
+                  <button
+                    onClick={() => handleAddToCart(f)}
+                    className="bg-yellow-500 text-white px-4 py-2 rounded-xl hover:bg-yellow-600 transition-all"
+                  >
+                    ➕ Adaugă în coș
+                  </button>
+                ) : (
+                  <p className="text-sm text-gray-500 italic">
+                    Autentifică-te pentru a adăuga în coș 🛒
+                  </p>
+                )}
               </div>
             </div>
           ))

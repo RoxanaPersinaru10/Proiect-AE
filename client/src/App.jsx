@@ -11,6 +11,8 @@ import AuthPage from "./pages/AuthPage";
 import UserManager from "./pages/UserManager";
 import SearchBar from "./components/SearchBar"; 
 import FlightManager from "./components/FlightManager";
+import CartManager from "./pages/CartManager";
+import BookingManager from "./pages/BookingManager";
 
 
 
@@ -30,11 +32,13 @@ function App() {
             <Route path="/" element={<Homepage />} />
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
-            <Route path="/cart" element={<Cart />} />
+  
             <Route path="/auth" element={<AuthPage />} />
             <Route path="/users" element={<UserManager />} />
             <Route path="/flights" element={<SearchBar />} />
              <Route path="/flights-manager" element={<FlightManager />} />
+             <Route path="/cart" element={<CartManager />} />
+             <Route path="/bookings" element={<BookingManager />} />
 
             <Route
               path="/profile"
