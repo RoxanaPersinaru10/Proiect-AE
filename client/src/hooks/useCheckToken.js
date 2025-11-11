@@ -10,32 +10,30 @@ function useCheckToken() {
     const token = localStorage.getItem("token");
 
     if (token) {
-      const options = {
-        method: "POST",
+      fetch(`${getApiUrl()}/auth/check`, {
+        method: "GET",
         headers: {
-          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({ token }),
-      };
-
-      fetch(`${getApiUrl()}/auth/check`, options)
+      })
         .then((res) => res.json())
         .then((res) => {
           if (res.success) {
             dispatch(setLoggedIn(true));
-            dispatch(setToken(res.data.token))
+            dispatch(setToken(token));
           } else {
             localStorage.removeItem("token");
-            window.location.href = "/login";
+            dispatch(setLoggedIn(false));
           }
         })
         .catch(() => {
           localStorage.removeItem("token");
-          window.location.href = "/login";
+          dispatch(setLoggedIn(false));
         })
         .finally(() => {
           dispatch(setCheckTokenLoading(false));
         });
+
     } else {
       dispatch(setCheckTokenLoading(false));
     }

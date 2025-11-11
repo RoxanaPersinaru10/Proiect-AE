@@ -1,9 +1,9 @@
-// src/components/Navbar.jsx
 import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 function Navbar() {
   const [userName, setUserName] = useState(null);
+  const navigate = useNavigate();
   const token = localStorage.getItem("token");
 
   useEffect(() => {
@@ -12,7 +12,6 @@ function Navbar() {
       return;
     }
 
-    // 🟢 Obținem datele utilizatorului din backend
     const fetchProfile = async () => {
       try {
         const res = await fetch("http://localhost:3000/auth/check", {
@@ -25,10 +24,12 @@ function Navbar() {
         if (data.success && data.user) {
           setUserName(data.user.name);
         } else {
+          localStorage.removeItem("token");
           setUserName(null);
         }
       } catch (err) {
         console.error("❌ Eroare la verificarea utilizatorului:", err);
+        localStorage.removeItem("token");
         setUserName(null);
       }
     };
@@ -38,27 +39,28 @@ function Navbar() {
 
   const handleLogout = () => {
     localStorage.removeItem("token");
-    window.location.href = "/auth";
+    setUserName(null);
+    navigate("/auth");
   };
 
   return (
     <nav className="bg-blue-700 text-white p-4 flex justify-between items-center">
       <div className="text-xl font-bold">
-        <Link to="/">🌍 Home</Link>
+        <Link to="/"> Home</Link>
       </div>
 
       <div className="flex gap-4 items-center">
         {token ? (
           <>
             <Link to="/users" className="hover:underline">
-              👥 Utilizatori
+              Utilizatori
             </Link>
             <Link to="/cart" className="hover:underline">
-              🛒 Coș
+              Coș
             </Link>
             {userName ? (
               <span className="font-semibold text-yellow-300">
-                👋 Salut, {userName}!
+                {userName}!
               </span>
             ) : (
               <span className="italic text-gray-300">Se încarcă...</span>
@@ -72,7 +74,7 @@ function Navbar() {
           </>
         ) : (
           <Link to="/auth" className="hover:underline">
-            🔐 Autentificare
+            Autentificare
           </Link>
         )}
       </div>

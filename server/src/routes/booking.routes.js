@@ -38,9 +38,14 @@ router.post("/place", verifyToken, async (req, res) => {
       bookings.push(booking);
     }
 
+    // 🧹 După ce comenzile au fost create, golim coșul utilizatorului
+    const { Cart } = require("../database/models");
+    const deletedCount = await Cart.destroy({ where: { user_id: userId } });
+    console.log(`🧹 Coș golit automat — ${deletedCount} articole șterse.`);
+
     res.json({
       success: true,
-      message: "Comandă plasată cu succes ✅",
+      message: `Comandă plasată cu succes ✅ (coșul a fost golit automat)`,
       data: bookings,
     });
   } catch (err) {
@@ -52,6 +57,7 @@ router.post("/place", verifyToken, async (req, res) => {
     });
   }
 });
+
 
 /**
  * 🟣 GET /bookings — Returnează comenzile utilizatorului logat
@@ -81,6 +87,81 @@ router.get("/", verifyToken, async (req, res) => {
     res.status(500).json({
       success: false,
       message: "Eroare la preluarea comenzilor",
+      error: err.message,
+    });
+  }
+});
+
+/**
+ * ✏️ PUT /bookings/:id — Actualizează cantitatea unei comenzi
+ */
+router.put("/:id", verifyToken, async (req, res) => {
+  try {
+    const { id } = req.params;
+    const userId = req.userId;
+    const { quantity, status } = req.body;
+
+    const booking = await Booking.findOne({
+      where: { id, user_id: userId },
+    });
+
+    if (!booking) {
+      return res.status(404).json({
+        success: false,
+        message: "Comanda nu a fost găsită sau nu îți aparține.",
+      });
+    }
+
+    if (quantity) booking.quantity = quantity;
+    if (status) booking.status = status;
+
+    await booking.save();
+
+    res.json({
+      success: true,
+      message: "Comanda actualizată cu succes ✅",
+      data: booking,
+    });
+  } catch (err) {
+    console.error("❌ Eroare la PUT /bookings/:id:", err);
+    res.status(500).json({
+      success: false,
+      message: "Eroare la actualizarea comenzii",
+      error: err.message,
+    });
+  }
+});
+
+/**
+ * ❌ DELETE /bookings/:id — Șterge complet o comandă
+ */
+router.delete("/:id", verifyToken, async (req, res) => {
+  try {
+    const { id } = req.params;
+    const userId = req.userId;
+
+    const booking = await Booking.findOne({
+      where: { id, user_id: userId },
+    });
+
+    if (!booking) {
+      return res.status(404).json({
+        success: false,
+        message: "Comanda nu a fost găsită sau nu îți aparține.",
+      });
+    }
+
+    await booking.destroy();
+
+    res.json({
+      success: true,
+      message: "Comanda a fost ștearsă complet ❌",
+    });
+  } catch (err) {
+    console.error("❌ Eroare la DELETE /bookings/:id:", err);
+    res.status(500).json({
+      success: false,
+      message: "Eroare la ștergerea comenzii",
       error: err.message,
     });
   }

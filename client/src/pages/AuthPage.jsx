@@ -11,42 +11,6 @@ function AuthPage() {
   const [message, setMessage] = useState("");
   const [token, setToken] = useState(localStorage.getItem("token") || null);
 
-  // 🔁 La montare — dacă avem token, verificăm dacă e valid
-  useEffect(() => {
-    const savedToken = localStorage.getItem("token");
-    console.log("🔎 Token la montare:", savedToken);
-    if (savedToken) {
-      setToken(savedToken);
-      checkToken(savedToken);
-    }
-  }, []);
-
-  // 🔐 Verifică validitatea tokenului cu serverul
-  const checkToken = async (tokenToCheck) => {
-    try {
-      const res = await fetch("http://localhost:3000/auth/check", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ token: tokenToCheck }),
-      });
-      const data = await res.json();
-
-      if (!data.success) {
-        console.warn("⚠️ Token invalid sau expirat, șterg din localStorage");
-        setMessage("Token invalid, te rog autentifică-te din nou.");
-        localStorage.removeItem("token");
-        setToken(null);
-      } else {
-        console.log("✅ Token valid confirmat de backend");
-        setMessage("Ești autentificat ✅");
-      }
-    } catch (err) {
-      console.error("❌ Eroare la verificarea tokenului:", err);
-      setMessage("Eroare la verificarea token-ului.");
-    }
-  };
-
-  // 🔵 Login / Register
   const handleSubmit = async (e) => {
     e.preventDefault();
     const url = isLogin
@@ -66,23 +30,10 @@ function AuthPage() {
 
       if (data.success) {
         if (isLogin && data.token) {
-          // 🟢 Salvăm tokenul în localStorage
           localStorage.setItem("token", data.token);
           setToken(data.token);
           setMessage("Autentificare reușită ✅");
-
-          // ✅ Loguri utile
-          console.log("✅ Token primit de la server:", data.token);
-          console.log("📦 Token salvat în localStorage:", localStorage.getItem("token"));
-
-          // 🔁 Verificăm după 1 secundă că persistă
-          setTimeout(() => {
-            console.log("🔁 Verific tokenul 1s mai târziu:", localStorage.getItem("token"));
-          }, 1000);
-
-          // 🔀 Navigăm spre homepage după login
-          setTimeout(() => navigate("/"), 1500);
-
+          navigate("/");
         } else {
           setMessage("Cont creat cu succes! Acum te poți autentifica.");
           setIsLogin(true);
@@ -100,7 +51,6 @@ function AuthPage() {
     localStorage.removeItem("token");
     setToken(null);
     setMessage("Te-ai delogat cu succes!");
-    console.log("👋 Token șters din localStorage");
   };
 
   return (

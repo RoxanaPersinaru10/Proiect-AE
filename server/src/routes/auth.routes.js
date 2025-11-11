@@ -5,6 +5,28 @@ const { User } = require("../database/models");
 const { isValidToken } = require("../utils/tokenUtils");
 
 const router = express.Router();
+// 🧩 Crează automat un cont de admin dacă nu există
+(async () => {
+  try {
+    const existingAdmin = await User.findOne({ where: { email: "admin@admin.com" } });
+
+    if (!existingAdmin) {
+      const hashedPassword = await bcrypt.hash("admin", 10);
+      await User.create({
+        name: "Administrator",
+        email: "admin@admin.com",
+        password: hashedPassword,
+        role: "admin",
+      });
+      console.log("✅ Cont de admin creat: admin@admin.com / parola: admin");
+    } else {
+      console.log("ℹ️ Contul de admin există deja.");
+    }
+  } catch (err) {
+    console.error("❌ Eroare la crearea contului de admin:", err);
+  }
+})();
+
 
 /**
  * 🟢 REGISTER - Creare cont nou
@@ -105,30 +127,38 @@ router.post("/login", async (req, res) => {
 /**
  * 🔵 CHECK - Verificare token JWT
  */
-router.post("/check", async (req, res) => {
-  const token = req.body.token;
+router.get("/check", async (req, res) => {
+  try {
+    const authHeader = req.headers.authorization;
+    if (!authHeader) {
+      return res.status(401).json({ success: false, message: "Lipsă token" });
+    }
 
-  if (!token) {
-    return res
-      .status(400)
-      .json({ success: false, message: "Token not found", data: {} });
+    const token = authHeader.split(" ")[1];
+    const decoded = jwt.verify(token, process.env.TOKEN_SECRET);
+
+    const user = await User.findByPk(decoded.id, {
+      attributes: ["id", "name", "email", "role"],
+    });
+
+    if (!user) {
+      return res.status(404).json({ success: false, message: "Utilizatorul nu există" });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: "Token valid ✅",
+      user,
+    });
+  } catch (err) {
+    console.error("❌ Eroare la /auth/check:", err.message);
+    res.status(401).json({
+      success: false,
+      message: "Token invalid sau expirat",
+    });
   }
-
-  const validToken = isValidToken(token);
-
-  if (!validToken) {
-    return res
-      .status(400)
-      .json({ success: false, message: "Token not valid", data: {} });
-  }
-
-  res
-    .status(200)
-    .json({ success: true, message: "Token is valid", data: {} });
 });
-/**
- * 🧠 DEBUG - Afișează toți utilizatorii existenți în format HTML
- */
+
 router.get("/all", async (req, res) => {
   try {
     const users = await User.findAll({ order: [["created_at", "DESC"]] });

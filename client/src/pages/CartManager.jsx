@@ -1,17 +1,18 @@
 import React, { useEffect, useState } from "react";
-console.log("🧭 CartManager a fost montat!");
+import { useNavigate } from "react-router-dom";
 
 function CartManager() {
   const [cart, setCart] = useState([]);
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(true);
+  const [orderPlaced, setOrderPlaced] = useState(false);
   const token = localStorage.getItem("token");
+  const navigate = useNavigate();
 
   const API_URL = "http://localhost:3000/cart";
 
   // 🔹 Preia coșul utilizatorului
   const getCart = async () => {
-    console.log("📦 [FRONTEND] Pornim GET /cart...");
     if (!token) {
       setMessage("Trebuie să fii autentificat pentru a-ți vedea coșul 🧾");
       setLoading(false);
@@ -28,7 +29,6 @@ function CartManager() {
       });
 
       const data = await res.json();
-      console.log("📦 [FRONTEND] Răspuns de la server:", data);
 
       if (data.success && Array.isArray(data.data)) {
         setCart(data.data);
@@ -45,13 +45,10 @@ function CartManager() {
     }
   };
 
-  // 🔁 Încarcă automat coșul după ce componenta se montează
   useEffect(() => {
-    console.log("🧠 Componenta CartManager montată — încercăm să preluăm coșul...");
     getCart();
   }, []);
 
-  // 🟠 Actualizează cantitatea unui articol
   const updateQuantity = async (id, quantity) => {
     try {
       const res = await fetch(`${API_URL}/${id}`, {
@@ -65,18 +62,16 @@ function CartManager() {
 
       const data = await res.json();
       if (data.success) {
-        setMessage("Cantitate actualizată cu succes ✅");
+        setMessage("Cantitate actualizată ✅");
         getCart();
       } else {
         setMessage(data.message || "Eroare la actualizare ❌");
       }
     } catch (err) {
       console.error("❌ Eroare la actualizare cantitate:", err);
-      setMessage("Eroare de rețea la actualizare.");
     }
   };
 
-  // 🔴 Șterge un articol din coș
   const deleteItem = async (id) => {
     if (!window.confirm("Sigur vrei să ștergi acest zbor din coș?")) return;
 
@@ -98,11 +93,10 @@ function CartManager() {
       }
     } catch (err) {
       console.error("❌ Eroare la ștergere din coș:", err);
-      setMessage("Eroare la ștergere din coș");
     }
   };
 
-  // 🟢 Plasează comanda (creează bookings în baza de date)
+  // 🟢 Plasează comanda
   const placeOrder = async () => {
     if (cart.length === 0) return alert("Coșul este gol!");
 
@@ -125,7 +119,8 @@ function CartManager() {
       if (data.success) {
         alert("✅ Comanda a fost plasată cu succes!");
         setMessage("Comandă plasată ✅");
-        setCart([]); // 🧹 Golește coșul după plasare
+        setCart([]);
+        setOrderPlaced(true); // 🟢 activăm butonul de navigare către BookingManager
       } else {
         alert("❌ " + (data.message || "Eroare la plasarea comenzii"));
       }
@@ -216,17 +211,26 @@ function CartManager() {
             </tbody>
           </table>
 
-          {/* 🟢 Butonul pentru plasarea comenzii */}
-          {cart.length > 0 && (
-            <div className="text-center mt-6">
+          {/* 🟢 Butoane finale */}
+          <div className="text-center mt-6 flex flex-col gap-3 items-center">
+            {cart.length > 0 && (
               <button
                 onClick={placeOrder}
                 className="bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700 font-semibold"
               >
                 ✅ Plasează comanda
               </button>
-            </div>
-          )}
+            )}
+
+            {orderPlaced && (
+              <button
+                onClick={() => navigate("/bookings")}
+                className="bg-purple-600 text-white px-6 py-2 rounded-lg hover:bg-purple-700 font-semibold"
+              >
+                📦 Mergi la comenzile mele
+              </button>
+            )}
+          </div>
         </div>
       )}
     </div>

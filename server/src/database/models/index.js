@@ -1,21 +1,26 @@
+const sequelize = require("../server"); // importă instanța principală
 const User = require("./user");
 const Flight = require("./flight");
 const Booking = require("./booking");
-const Cart = require("./cart"); // 🟢 Importăm modelul de coș
+const Cart = require("./cart");
 
-// 🧩 Relații pentru Booking
-User.hasMany(Booking, { foreignKey: "userId", onDelete: "CASCADE" });
-Booking.belongsTo(User, { foreignKey: "userId" });
+// 🔹 Definim relațiile
+User.hasMany(Booking, { foreignKey: "user_id" });
+Booking.belongsTo(User, { foreignKey: "user_id" });
 
-Flight.hasMany(Booking, { foreignKey: "flightId", onDelete: "CASCADE" });
-Booking.belongsTo(Flight, { foreignKey: "flightId" });
+Flight.hasMany(Booking, { foreignKey: "flight_id" });
+Booking.belongsTo(Flight, { foreignKey: "flight_id" });
 
-// 🧩 Relații pentru Cart
-User.hasMany(Cart, { foreignKey: "user_id", onDelete: "CASCADE" });
+User.hasMany(Cart, { foreignKey: "user_id" });
 Cart.belongsTo(User, { foreignKey: "user_id" });
 
-Flight.hasMany(Cart, { foreignKey: "flight_id", onDelete: "CASCADE" });
+Flight.hasMany(Cart, { foreignKey: "flight_id" });
 Cart.belongsTo(Flight, { foreignKey: "flight_id" });
 
-// ✅ Exportăm toate modelele
-module.exports = { User, Flight, Booking, Cart };
+module.exports = {
+  sequelize,
+  User,
+  Flight,
+  Booking,
+  Cart,
+};
