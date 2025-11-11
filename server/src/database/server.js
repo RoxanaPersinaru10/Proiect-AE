@@ -11,10 +11,10 @@ const sequelize = new Sequelize({
 sequelize
   .sync()
   .then(() => {
-    console.log("✅ Models successfully (re)created.");
+    console.log(" Models successfully (re)created.");
   })
   .catch((err) => {
-    console.error("❌ Database sync error:", err);
+    console.error(" Database sync error:", err);
   });
 
 module.exports = sequelize; 

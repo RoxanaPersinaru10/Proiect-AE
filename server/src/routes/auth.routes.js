@@ -5,6 +5,7 @@ const { User } = require("../database/models");
 const { isValidToken } = require("../utils/tokenUtils");
 
 const router = express.Router();
+
 // Crează automat un cont de admin dacă nu există
 (async () => {
   try {
@@ -27,8 +28,7 @@ const router = express.Router();
   }
 })();
 
-
-
+// 🔹 REGISTER
 router.post("/register", async (req, res) => {
   try {
     const { name, email, password } = req.body;
@@ -40,7 +40,6 @@ router.post("/register", async (req, res) => {
       });
     }
 
-    // verifică dacă userul există deja
     const existing = await User.findOne({ where: { email } });
     if (existing) {
       return res.status(400).json({
@@ -49,7 +48,6 @@ router.post("/register", async (req, res) => {
       });
     }
 
-    // criptează parola
     const hashedPassword = await bcrypt.hash(password, 10);
 
     const user = await User.create({
@@ -78,7 +76,7 @@ router.post("/register", async (req, res) => {
   }
 });
 
-
+// 🔹 LOGIN
 router.post("/login", async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -94,14 +92,14 @@ router.post("/login", async (req, res) => {
       return res
         .status(400)
         .json({ success: false, message: "Parolă incorectă." });
-    
+
     console.log(" TOKEN_SECRET la LOGIN:", process.env.TOKEN_SECRET);
 
-    // generăm tokenul JWT
+    // ✅ Token valabil 7 zile
     const token = jwt.sign(
       { id: user.id, role: user.role },
       process.env.TOKEN_SECRET,
-      { expiresIn: "1h" }
+      { expiresIn: "7d" }
     );
 
     res.status(200).json({
@@ -120,10 +118,11 @@ router.post("/login", async (req, res) => {
   }
 });
 
-
-//CHECK- Verificare token JWT
- 
+// 🔹 CHECK — verificare token JWT
 router.get("/check", async (req, res) => {
+  // ✅ dezactivează cache-ul pentru a preveni răspunsurile 304
+  res.set("Cache-Control", "no-store");
+
   try {
     const authHeader = req.headers.authorization;
     if (!authHeader) {
@@ -155,6 +154,7 @@ router.get("/check", async (req, res) => {
   }
 });
 
+// 🔹 ALL USERS (debug)
 router.get("/all", async (req, res) => {
   try {
     const users = await User.findAll({ order: [["created_at", "DESC"]] });
@@ -202,6 +202,5 @@ router.get("/all", async (req, res) => {
     res.status(500).send("<h3>Eroare la afișarea utilizatorilor.</h3>");
   }
 });
-
 
 module.exports = router;

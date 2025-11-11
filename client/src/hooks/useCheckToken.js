@@ -7,37 +7,36 @@ function useCheckToken() {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
+  const token = localStorage.getItem("token");
+  console.log("Token din localStorage:", token);
 
-    if (token) {
-      fetch(`${getApiUrl()}/auth/check`, {
-        method: "GET",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      })
-        .then((res) => res.json())
-        .then((res) => {
-          if (res.success) {
-            dispatch(setLoggedIn(true));
-            dispatch(setToken(token));
-          } else {
-            localStorage.removeItem("token");
-            dispatch(setLoggedIn(false));
-          }
-        })
-        .catch(() => {
+  if (token) {
+    fetch(`${getApiUrl()}/auth/check`, {
+      headers: { Authorization: `Bearer ${token}` },
+    })
+      .then((res) => res.json())
+      .then((res) => {
+        console.log("Răspuns /auth/check:", res);
+        if (res.success) {
+          dispatch(setLoggedIn(true));
+          dispatch(setToken(token));
+        } else {
           localStorage.removeItem("token");
           dispatch(setLoggedIn(false));
-        })
-        .finally(() => {
-          dispatch(setCheckTokenLoading(false));
-        });
-
-    } else {
-      dispatch(setCheckTokenLoading(false));
-    }
+        }
+      })
+      .catch((err) => {
+        console.error("Eroare check token:", err);
+        localStorage.removeItem("token");
+        dispatch(setLoggedIn(false));
+      })
+      .finally(() => dispatch(setCheckTokenLoading(false)));
+  } else {
+    dispatch(setCheckTokenLoading(false));
+  }
   }, []);
+
+
 }
 
 export default useCheckToken;
