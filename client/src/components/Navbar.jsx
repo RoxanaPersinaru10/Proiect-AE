@@ -28,7 +28,7 @@ function Navbar() {
           setUserName(null);
         }
       } catch (err) {
-        console.error("❌ Eroare la verificarea utilizatorului:", err);
+        console.error("Eroare la verificarea utilizatorului:", err);
         localStorage.removeItem("token");
         setUserName(null);
       }

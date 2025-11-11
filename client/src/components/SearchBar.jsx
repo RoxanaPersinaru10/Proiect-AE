@@ -11,11 +11,11 @@ function SearchBar() {
   const [flights, setFlights] = useState([]);
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
-  const navigate = useNavigate(); // 🧭 pentru redirecționare
+  const navigate = useNavigate(); 
 
   const token = localStorage.getItem("token");
 
-  // 📍 Lista de aeroporturi pentru autocomplete
+  // Lista de aeroporturi pentru autocomplete
   const airports = [
     { code: "OTP", name: "Bucharest Henri Coandă International" },
     { code: "BLQ", name: "Bologna Guglielmo Marconi" },
@@ -28,7 +28,7 @@ function SearchBar() {
     { code: "IST", name: "Istanbul Airport" },
   ];
 
-  // 🔍 Autosuggest logic
+  //  Autosuggest logic
   const getSuggestions = (value) => {
     const input = value.trim().toLowerCase();
     return input.length === 0
@@ -51,7 +51,7 @@ function SearchBar() {
   const [fromSuggestions, setFromSuggestions] = useState([]);
   const [toSuggestions, setToSuggestions] = useState([]);
 
-  // 🟢 Căutare zboruri
+  // Căutare zboruri
   const handleSearch = async (e) => {
     e.preventDefault();
 
@@ -85,7 +85,7 @@ function SearchBar() {
 
         setFlights(limitedFlights);
       } else {
-        alert("Nu s-au găsit zboruri 😕");
+        alert("Nu s-au găsit zboruri ");
         setFlights([]);
       }
     } catch (error) {
@@ -96,7 +96,7 @@ function SearchBar() {
     }
   };
 
-  // 🟣 Adaugă un zbor în coș și redirecționează către /cart
+  //  Adaugă un zbor în coș și redirecționează către /cart
   const handleAddToCart = async (flight) => {
     if (!token) {
       alert("Trebuie să fii autentificat pentru a adăuga în coș!");
@@ -124,13 +124,13 @@ function SearchBar() {
       const data = await res.json();
 
       if (data.success) {
-        setMessage("✈️ Zbor adăugat în coș ✅ Redirecționare...");
-        // 🔁 Redirecționează către pagina de coș după 1s
+        setMessage(" Zbor adăugat în coș. Redirecționare...");
+        // Redirecționează către pagina de coș după 1s
         setTimeout(() => {
           navigate("/cart");
         }, 1000);
       } else {
-        setMessage(data.message || "Eroare la adăugare în coș ❌");
+        setMessage(data.message || "Eroare la adăugare în coș ");
       }
     } catch (err) {
       console.error("Eroare la adăugare în coș:", err);
@@ -143,7 +143,7 @@ function SearchBar() {
   return (
     <div className="min-h-screen bg-gradient-to-b from-blue-50 to-blue-100 flex flex-col items-center py-12 px-4">
       <h1 className="text-3xl font-bold text-blue-800 mb-8">
-        Caută bilete de avion ✈️
+        Caută bilete de avion 
       </h1>
 
       {/* Formular de căutare */}

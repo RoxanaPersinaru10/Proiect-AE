@@ -9,7 +9,7 @@ function BookingManager() {
 
   const API_URL = "http://localhost:3000/bookings";
 
-  // 🔹 Preia comenzile utilizatorului autentificat
+  //  Preia comenzile utilizatorului autentificat
   const getBookings = async () => {
     setLoading(true);
     try {
@@ -19,13 +19,13 @@ function BookingManager() {
       const data = await res.json();
       if (data.success && Array.isArray(data.data)) {
         setBookings(data.data);
-        setMessage("Comenzi încărcate ✅");
+        setMessage("Comenzi încărcate ");
       } else {
         setBookings([]);
-        setMessage(data.message || "Nu s-au găsit comenzi ❌");
+        setMessage(data.message || "Nu s-au găsit comenzi ");
       }
     } catch (err) {
-      console.error("❌ Eroare la preluarea comenzilor:", err);
+      console.error(" Eroare la preluarea comenzilor:", err);
       setMessage("Eroare la încărcarea comenzilor.");
     } finally {
       setLoading(false);
@@ -36,7 +36,7 @@ function BookingManager() {
     if (token) getBookings();
   }, [token]);
 
-  // ✏️ Actualizează cantitatea unei comenzi
+  // Actualizează cantitatea unei comenzi
   const updateBooking = async (id, quantity) => {
     try {
       const res = await fetch(`${API_URL}/${id}`, {
@@ -50,18 +50,18 @@ function BookingManager() {
 
       const data = await res.json();
       if (data.success) {
-        setMessage("Cantitate actualizată ✅");
+        setMessage("Cantitate actualizată ");
         getBookings();
       } else {
-        setMessage(data.message || "Eroare la actualizare ❌");
+        setMessage(data.message || "Eroare la actualizare ");
       }
     } catch (err) {
-      console.error("❌ Eroare la actualizare comandă:", err);
+      console.error(" Eroare la actualizare comandă:", err);
       setMessage("Eroare de rețea la actualizare.");
     }
   };
 
-  // 🟠 Anulează o comandă (schimbă statusul în "anulată")
+  //  Anulează o comandă (schimbă statusul în "anulată")
   const cancelBooking = async (id) => {
     if (!window.confirm("Sigur vrei să anulezi această comandă?")) return;
     try {
@@ -76,18 +76,18 @@ function BookingManager() {
 
       const data = await res.json();
       if (data.success) {
-        setMessage("Comanda a fost anulată ❌");
+        setMessage("Comanda a fost anulată ");
         getBookings();
       } else {
         setMessage(data.message);
       }
     } catch (err) {
-      console.error("❌ Eroare la anularea comenzii:", err);
+      console.error("Eroare la anularea comenzii:", err);
       setMessage("Eroare la anulare comandă.");
     }
   };
 
-  // 🔍 Filtrare după status
+  // Filtrare după status
   const filteredBookings =
     filter === "toate"
       ? bookings
@@ -96,7 +96,7 @@ function BookingManager() {
   return (
     <div className="min-h-screen bg-gray-100 p-6">
       <h1 className="text-3xl font-bold text-center text-green-700 mb-6">
-        📦 Comenzile mele
+        Comenzile mele
       </h1>
 
       {message && (
@@ -107,7 +107,7 @@ function BookingManager() {
         <p className="text-center text-gray-500 text-lg">Se încarcă comenzile...</p>
       ) : (
         <div className="max-w-5xl mx-auto bg-white p-6 rounded-2xl shadow-md">
-          {/* 🔹 Filtru status */}
+          {/*  Filtru status */}
           <div className="flex justify-between items-center mb-4">
             <h2 className="text-xl font-semibold text-gray-700">
               Lista comenzilor
@@ -117,9 +117,9 @@ function BookingManager() {
               onChange={(e) => setFilter(e.target.value)}
               className="border rounded-lg px-3 py-2"
             >
-              <option value="toate">🔄 Toate comenzile</option>
-              <option value="plasată">🟢 Active (plasate)</option>
-              <option value="anulată">🔴 Anulate</option>
+              <option value="toate">Toate comenzile</option>
+              <option value="plasată">Active (plasate)</option>
+              <option value="anulată">Anulate</option>
             </select>
           </div>
 
@@ -175,13 +175,13 @@ function BookingManager() {
                             onClick={() => updateBooking(b.id, b.quantity)}
                             className="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600"
                           >
-                            💾 Salvează
+                            Salvează
                           </button>
                           <button
                             onClick={() => cancelBooking(b.id)}
                             className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600"
                           >
-                            🚫 Anulează
+                            Anulează
                           </button>
                         </>
                       )}

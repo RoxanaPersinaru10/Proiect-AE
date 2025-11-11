@@ -5,7 +5,7 @@ const { User } = require("../database/models");
 const { isValidToken } = require("../utils/tokenUtils");
 
 const router = express.Router();
-// 🧩 Crează automat un cont de admin dacă nu există
+// Crează automat un cont de admin dacă nu există
 (async () => {
   try {
     const existingAdmin = await User.findOne({ where: { email: "admin@admin.com" } });
@@ -18,19 +18,17 @@ const router = express.Router();
         password: hashedPassword,
         role: "admin",
       });
-      console.log("✅ Cont de admin creat: admin@admin.com / parola: admin");
+      console.log("Cont de admin creat: admin@admin.com / parola: admin");
     } else {
-      console.log("ℹ️ Contul de admin există deja.");
+      console.log(" Contul de admin există deja.");
     }
   } catch (err) {
-    console.error("❌ Eroare la crearea contului de admin:", err);
+    console.error(" Eroare la crearea contului de admin:", err);
   }
 })();
 
 
-/**
- * 🟢 REGISTER - Creare cont nou
- */
+
 router.post("/register", async (req, res) => {
   try {
     const { name, email, password } = req.body;
@@ -71,7 +69,7 @@ router.post("/register", async (req, res) => {
       },
     });
   } catch (err) {
-    console.error("❌ Eroare la înregistrare:", err.message);
+    console.error("Eroare la înregistrare:", err.message);
     res.status(500).json({
       success: false,
       message: "Eroare server.",
@@ -80,9 +78,7 @@ router.post("/register", async (req, res) => {
   }
 });
 
-/**
- * 🟡 LOGIN - Autentificare
- */
+
 router.post("/login", async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -99,7 +95,7 @@ router.post("/login", async (req, res) => {
         .status(400)
         .json({ success: false, message: "Parolă incorectă." });
     
-    console.log("🔐 TOKEN_SECRET la LOGIN:", process.env.TOKEN_SECRET);
+    console.log(" TOKEN_SECRET la LOGIN:", process.env.TOKEN_SECRET);
 
     // generăm tokenul JWT
     const token = jwt.sign(
@@ -115,7 +111,7 @@ router.post("/login", async (req, res) => {
       user: { id: user.id, name: user.name, email: user.email },
     });
   } catch (err) {
-    console.error("❌ Eroare la login:", err.message);
+    console.error(" Eroare la login:", err.message);
     res.status(500).json({
       success: false,
       message: "Eroare server.",
@@ -124,9 +120,9 @@ router.post("/login", async (req, res) => {
   }
 });
 
-/**
- * 🔵 CHECK - Verificare token JWT
- */
+
+//CHECK- Verificare token JWT
+ 
 router.get("/check", async (req, res) => {
   try {
     const authHeader = req.headers.authorization;
@@ -147,11 +143,11 @@ router.get("/check", async (req, res) => {
 
     res.status(200).json({
       success: true,
-      message: "Token valid ✅",
+      message: "Token valid ",
       user,
     });
   } catch (err) {
-    console.error("❌ Eroare la /auth/check:", err.message);
+    console.error("Eroare la /auth/check:", err.message);
     res.status(401).json({
       success: false,
       message: "Token invalid sau expirat",

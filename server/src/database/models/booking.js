@@ -1,4 +1,4 @@
-// server/src/database/models/booking.js
+
 const { DataTypes } = require("sequelize");
 const sequelize = require("../server");
 const User = require("./user");
@@ -39,7 +39,7 @@ const Booking = sequelize.define(
   }
 );
 
-// 🔗 Relații
+// Relații
 User.hasMany(Booking, { foreignKey: "user_id" });
 Booking.belongsTo(User, { foreignKey: "user_id" });
 

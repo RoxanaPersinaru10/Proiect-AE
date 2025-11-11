@@ -5,10 +5,7 @@ const { verifyToken } = require("../utils/tokenUtils");
 
 const router = express.Router();
 
-/**
- * 🟢 CREATE USER
- * POST /users
- */
+
 router.post("/", async (req, res) => {
   try {
     const { name, email, password, role } = req.body;
@@ -39,17 +36,14 @@ router.post("/", async (req, res) => {
       .status(201)
       .json({ success: true, message: "User created", data: user });
   } catch (err) {
-    console.error("❌ Error creating user:", err.message);
+    console.error("Error creating user:", err.message);
     res
       .status(500)
       .json({ success: false, message: "Server error", error: err.message });
   }
 });
 
-/**
- * 🟡 UPDATE USER
- * PUT /users/:id
- */
+
 router.put("/:id", verifyToken, async (req, res) => {
   try {
     const id = req.params.id;
@@ -83,17 +77,14 @@ router.put("/:id", verifyToken, async (req, res) => {
       data: updatedUser,
     });
   } catch (err) {
-    console.error("❌ Error updating user:", err.message);
+    console.error(" Error updating user:", err.message);
     res
       .status(500)
       .json({ success: false, message: "Server error", error: err.message });
   }
 });
 
-/**
- * 🔴 DELETE USER
- * DELETE /users/:id
- */
+
 router.delete("/:id", verifyToken, async (req, res) => {
   try {
     const id = req.params.id;
@@ -116,17 +107,14 @@ router.delete("/:id", verifyToken, async (req, res) => {
       .status(200)
       .json({ success: true, message: "User successfully deleted" });
   } catch (err) {
-    console.error("❌ Error deleting user:", err.message);
+    console.error(" Error deleting user:", err.message);
     res
       .status(500)
       .json({ success: false, message: "Server error", error: err.message });
   }
 });
 
-/**
- * 🧾 GET ALL USERS
- * GET /users
- */
+
 router.get("/", verifyToken, async (req, res) => {
   try {
     const users = await User.findAll({
@@ -138,17 +126,14 @@ router.get("/", verifyToken, async (req, res) => {
       .status(200)
       .json({ success: true, message: "Users retrieved", data: users });
   } catch (err) {
-    console.error("❌ Error fetching users:", err.message);
+    console.error(" Error fetching users:", err.message);
     res
       .status(500)
       .json({ success: false, message: "Server error", error: err.message });
   }
 });
 
-/**
- * 🔍 GET USER BY ID
- * GET /users/:id
- */
+
 router.get("/:id", verifyToken, async (req, res) => {
   try {
     const id = req.params.id;
@@ -175,7 +160,7 @@ router.get("/:id", verifyToken, async (req, res) => {
       data: user,
     });
   } catch (err) {
-    console.error("❌ Error fetching user:", err.message);
+    console.error(" Error fetching user:", err.message);
     res
       .status(500)
       .json({ success: false, message: "Server error", error: err.message });

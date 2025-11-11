@@ -5,9 +5,8 @@ const { verifyToken } = require("../utils/tokenUtils");
 
 const router = express.Router();
 
-/**
- * 🟢 POST /bookings/place — Plasează o comandă pentru utilizatorul autentificat
- */
+
+ 
 router.post("/place", verifyToken, async (req, res) => {
   try {
     const userId = req.userId;
@@ -38,18 +37,18 @@ router.post("/place", verifyToken, async (req, res) => {
       bookings.push(booking);
     }
 
-    // 🧹 După ce comenzile au fost create, golim coșul utilizatorului
+    // După ce comenzile au fost create, golim coșul utilizatorului
     const { Cart } = require("../database/models");
     const deletedCount = await Cart.destroy({ where: { user_id: userId } });
-    console.log(`🧹 Coș golit automat — ${deletedCount} articole șterse.`);
+    console.log(`Coș golit automat — ${deletedCount} articole șterse.`);
 
     res.json({
       success: true,
-      message: `Comandă plasată cu succes ✅ (coșul a fost golit automat)`,
+      message: `Comandă plasată cu succes  (coșul a fost golit automat)`,
       data: bookings,
     });
   } catch (err) {
-    console.error("❌ Eroare la POST /bookings/place:", err);
+    console.error(" Eroare la POST /bookings/place:", err);
     res.status(500).json({
       success: false,
       message: "Eroare la plasarea comenzii",
@@ -59,9 +58,7 @@ router.post("/place", verifyToken, async (req, res) => {
 });
 
 
-/**
- * 🟣 GET /bookings — Returnează comenzile utilizatorului logat
- */
+
 router.get("/", verifyToken, async (req, res) => {
   try {
     const userId = req.userId;
@@ -79,11 +76,11 @@ router.get("/", verifyToken, async (req, res) => {
 
     res.json({
       success: true,
-      message: "Comenzi găsite ✅",
+      message: "Comenzi găsite ",
       data: orders,
     });
   } catch (err) {
-    console.error("❌ Eroare la GET /bookings:", err);
+    console.error("roare la GET /bookings:", err);
     res.status(500).json({
       success: false,
       message: "Eroare la preluarea comenzilor",
@@ -92,9 +89,7 @@ router.get("/", verifyToken, async (req, res) => {
   }
 });
 
-/**
- * ✏️ PUT /bookings/:id — Actualizează cantitatea unei comenzi
- */
+
 router.put("/:id", verifyToken, async (req, res) => {
   try {
     const { id } = req.params;
@@ -119,11 +114,11 @@ router.put("/:id", verifyToken, async (req, res) => {
 
     res.json({
       success: true,
-      message: "Comanda actualizată cu succes ✅",
+      message: "Comanda actualizată cu succes ",
       data: booking,
     });
   } catch (err) {
-    console.error("❌ Eroare la PUT /bookings/:id:", err);
+    console.error(" Eroare la PUT /bookings/:id:", err);
     res.status(500).json({
       success: false,
       message: "Eroare la actualizarea comenzii",
@@ -132,9 +127,7 @@ router.put("/:id", verifyToken, async (req, res) => {
   }
 });
 
-/**
- * ❌ DELETE /bookings/:id — Șterge complet o comandă
- */
+
 router.delete("/:id", verifyToken, async (req, res) => {
   try {
     const { id } = req.params;
@@ -155,10 +148,10 @@ router.delete("/:id", verifyToken, async (req, res) => {
 
     res.json({
       success: true,
-      message: "Comanda a fost ștearsă complet ❌",
+      message: "Comanda a fost ștearsă complet ",
     });
   } catch (err) {
-    console.error("❌ Eroare la DELETE /bookings/:id:", err);
+    console.error(" Eroare la DELETE /bookings/:id:", err);
     res.status(500).json({
       success: false,
       message: "Eroare la ștergerea comenzii",

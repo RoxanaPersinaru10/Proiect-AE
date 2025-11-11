@@ -11,10 +11,10 @@ function CartManager() {
 
   const API_URL = "http://localhost:3000/cart";
 
-  // 🔹 Preia coșul utilizatorului
+  // Preia coșul utilizatorului
   const getCart = async () => {
     if (!token) {
-      setMessage("Trebuie să fii autentificat pentru a-ți vedea coșul 🧾");
+      setMessage("Trebuie să fii autentificat pentru a-ți vedea coșul ");
       setLoading(false);
       return;
     }
@@ -32,13 +32,13 @@ function CartManager() {
 
       if (data.success && Array.isArray(data.data)) {
         setCart(data.data);
-        setMessage("Coș încărcat ✅");
+        setMessage("Coș încărcat ");
       } else {
         setCart([]);
-        setMessage(data.message || "Coșul este gol ❌");
+        setMessage(data.message || "Coșul este gol ");
       }
     } catch (err) {
-      console.error("❌ Eroare la preluarea coșului:", err);
+      console.error(" Eroare la preluarea coșului:", err);
       setMessage("Eroare de rețea la încărcare coș");
     } finally {
       setLoading(false);
@@ -62,13 +62,13 @@ function CartManager() {
 
       const data = await res.json();
       if (data.success) {
-        setMessage("Cantitate actualizată ✅");
+        setMessage("Cantitate actualizată ");
         getCart();
       } else {
-        setMessage(data.message || "Eroare la actualizare ❌");
+        setMessage(data.message || "Eroare la actualizare ");
       }
     } catch (err) {
-      console.error("❌ Eroare la actualizare cantitate:", err);
+      console.error("Eroare la actualizare cantitate:", err);
     }
   };
 
@@ -86,17 +86,17 @@ function CartManager() {
 
       const data = await res.json();
       if (data.success) {
-        setMessage("Zbor șters din coș ❌");
+        setMessage("Zbor șters din coș ");
         getCart();
       } else {
         setMessage(data.message);
       }
     } catch (err) {
-      console.error("❌ Eroare la ștergere din coș:", err);
+      console.error(" Eroare la ștergere din coș:", err);
     }
   };
 
-  // 🟢 Plasează comanda
+  // Plasează comanda
   const placeOrder = async () => {
     if (cart.length === 0) return alert("Coșul este gol!");
 
@@ -117,15 +117,15 @@ function CartManager() {
 
       const data = await res.json();
       if (data.success) {
-        alert("✅ Comanda a fost plasată cu succes!");
+        alert("Comanda a fost plasată cu succes!");
         setMessage("Comandă plasată ✅");
         setCart([]);
-        setOrderPlaced(true); // 🟢 activăm butonul de navigare către BookingManager
+        setOrderPlaced(true); // activăm butonul de navigare către BookingManager
       } else {
-        alert("❌ " + (data.message || "Eroare la plasarea comenzii"));
+        alert( (data.message || "Eroare la plasarea comenzii"));
       }
     } catch (err) {
-      console.error("❌ Eroare la plasarea comenzii:", err);
+      console.error(" Eroare la plasarea comenzii:", err);
       alert("Eroare la plasarea comenzii");
     }
   };
@@ -190,13 +190,13 @@ function CartManager() {
                         onClick={() => updateQuantity(item.id, item.quantity)}
                         className="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600"
                       >
-                        🔄 Actualizează
+                         Actualizează
                       </button>
                       <button
                         onClick={() => deleteItem(item.id)}
                         className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600"
                       >
-                        🗑️ Șterge
+                        Șterge
                       </button>
                     </td>
                   </tr>
@@ -211,14 +211,14 @@ function CartManager() {
             </tbody>
           </table>
 
-          {/* 🟢 Butoane finale */}
+          {/*  Butoane finale */}
           <div className="text-center mt-6 flex flex-col gap-3 items-center">
             {cart.length > 0 && (
               <button
                 onClick={placeOrder}
                 className="bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700 font-semibold"
               >
-                ✅ Plasează comanda
+                 Plasează comanda
               </button>
             )}
 
@@ -227,7 +227,7 @@ function CartManager() {
                 onClick={() => navigate("/bookings")}
                 className="bg-purple-600 text-white px-6 py-2 rounded-lg hover:bg-purple-700 font-semibold"
               >
-                📦 Mergi la comenzile mele
+                 Mergi la comenzile mele
               </button>
             )}
           </div>

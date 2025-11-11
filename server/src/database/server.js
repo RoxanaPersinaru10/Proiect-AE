@@ -4,7 +4,7 @@ const path = require("path");
 
 const sequelize = new Sequelize({
   dialect: "sqlite",
-  storage: path.join(__dirname, "db.sqlite"), // ✅ cale completă
+  storage: path.join(__dirname, "db.sqlite"), 
   logging: false,
 });
 
@@ -17,4 +17,4 @@ sequelize
     console.error("❌ Database sync error:", err);
   });
 
-module.exports = sequelize; // ✅ exportă doar instanța
+module.exports = sequelize; 

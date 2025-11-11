@@ -43,7 +43,7 @@ const Cart = sequelize.define(
   }
 );
 
-// 🔗 Asocieri
+// Asocieri
 User.hasMany(Cart, { foreignKey: "user_id", onDelete: "CASCADE" });
 Cart.belongsTo(User, { foreignKey: "user_id" });
 

@@ -22,7 +22,7 @@ function FlightManager() {
     Authorization: `Bearer ${token}`,
   };
 
-  // 🧩 Reîncarcă tokenul dacă se schimbă în localStorage
+  // Reîncarcă tokenul dacă se schimbă în localStorage
   useEffect(() => {
     const checkToken = () => {
       const savedToken = localStorage.getItem("token");
@@ -33,7 +33,7 @@ function FlightManager() {
     return () => window.removeEventListener("storage", checkToken);
   }, [token]);
 
-  // 🔹 Preia toate zborurile
+  // Preia toate zborurile
   const getFlights = async () => {
     try {
       const res = await fetch(`${API_URL}/all`, { headers });
@@ -43,11 +43,11 @@ function FlightManager() {
         setMessage("Zboruri încărcate ✅");
       } else setMessage(data.message);
     } catch (err) {
-      setMessage("Eroare la preluarea zborurilor ❌");
+      setMessage("Eroare la preluarea zborurilor ");
     }
   };
 
-  // 🔹 Creează zbor
+  // Creează zbor
   const createFlight = async () => {
     try {
       const res = await fetch(API_URL, {
@@ -57,7 +57,7 @@ function FlightManager() {
       });
       const data = await res.json();
       if (data.success) {
-        setMessage("Zbor adăugat ✈️");
+        setMessage("Zbor adăugat ");
         getFlights();
       } else setMessage(data.message);
     } catch (err) {
@@ -65,12 +65,12 @@ function FlightManager() {
     }
   };
 
-  // 🔹 Actualizează zbor
+  //  Actualizează zbor
   const updateFlight = async () => {
     if (!form.id) return setMessage("Introdu ID-ul pentru actualizare");
 
     try {
-        // 🔧 Trimite doar câmpurile completate (ignoră cele goale)
+        //  Trimite doar câmpurile completate (ignoră cele goale)
         const filteredData = Object.entries(form).reduce((acc, [key, value]) => {
         if (value !== "" && key !== "id") acc[key] = value;
         return acc;
@@ -88,7 +88,7 @@ function FlightManager() {
 
         const data = await res.json();
         if (data.success) {
-        setMessage("Zbor actualizat ✅");
+        setMessage("Zbor actualizat ");
         getFlights();
         } else {
         setMessage(data.message || "Eroare la actualizare");
@@ -98,7 +98,7 @@ function FlightManager() {
     }
    };
 
-  // 🔹 Șterge zbor
+  // Șterge zbor
   const deleteFlight = async (id) => {
     if (!window.confirm("Sigur vrei să ștergi zborul?")) return;
     try {
@@ -108,7 +108,7 @@ function FlightManager() {
       });
       const data = await res.json();
       if (data.success) {
-        setMessage("Zbor șters ❌");
+        setMessage("Zbor șters ");
         getFlights();
       } else setMessage(data.message);
     } catch (err) {

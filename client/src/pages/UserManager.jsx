@@ -19,12 +19,12 @@ function UserManager() {
     Authorization: `Bearer ${token}`,
   };
 
-  // 🧩 Reîncarcă tokenul automat când se schimbă în localStorage (ex: după login)
+  // Reîncarcă tokenul automat când se schimbă în localStorage (ex: după login)
   useEffect(() => {
     const checkToken = () => {
       const savedToken = localStorage.getItem("token");
       if (savedToken !== token) {
-        console.log("🔁 Token actualizat din localStorage:", savedToken);
+        console.log(" Token actualizat din localStorage:", savedToken);
         setToken(savedToken || "");
       }
     };
@@ -37,15 +37,15 @@ function UserManager() {
     return () => window.removeEventListener("storage", checkToken);
   }, [token]);
 
-  // 🔹 Preia toți utilizatorii
+  // Preia toți utilizatorii
   const getUsers = async () => {
     try {
-      console.log("🔑 Token folosit la fetch:", token);
+      console.log("Token folosit la fetch:", token);
       const res = await fetch(API_URL, { headers });
       const data = await res.json();
       if (data.success) {
         setUsers(data.data);
-        setMessage("Utilizatori încărcați ✅");
+        setMessage("Utilizatori încărcați ");
       } else {
         setMessage(data.message || "Eroare la preluare utilizatori");
       }
@@ -54,7 +54,7 @@ function UserManager() {
     }
   };
 
-  // 🔹 Creează utilizator
+  //  Creează utilizator
   const createUser = async () => {
     try {
       const res = await fetch(API_URL, {
@@ -64,7 +64,7 @@ function UserManager() {
       });
       const data = await res.json();
       if (data.success) {
-        setMessage("Utilizator creat ✅");
+        setMessage("Utilizator creat ");
         getUsers();
       } else setMessage(data.message);
     } catch (err) {
@@ -72,13 +72,12 @@ function UserManager() {
     }
   };
 
-  // 🔹 Actualizează utilizator
-  // 🔹 Actualizează utilizator
+  
     const updateUser = async () => {
     if (!form.id) return setMessage("Introdu ID-ul pentru actualizare");
 
     try {
-        // 🔧 Eliminăm câmpurile goale — trimitem doar ce a fost completat
+        //  Eliminăm câmpurile goale — trimitem doar ce a fost completat
         const filteredData = Object.entries(form).reduce((acc, [key, value]) => {
         if (value !== "" && key !== "id") {
             acc[key] = value;
@@ -99,7 +98,7 @@ function UserManager() {
 
         const data = await res.json();
         if (data.success) {
-        setMessage("Utilizator actualizat ✅");
+        setMessage("Utilizator actualizat ");
         getUsers();
         } else {
         setMessage(data.message || "Eroare la actualizare");
@@ -110,7 +109,7 @@ function UserManager() {
     };
 
 
-  // 🔹 Șterge utilizator
+  // Șterge utilizator
   const deleteUser = async (id) => {
     if (!id) return;
     if (!window.confirm("Sigur vrei să ștergi utilizatorul?")) return;
@@ -121,7 +120,7 @@ function UserManager() {
       });
       const data = await res.json();
       if (data.success) {
-        setMessage("Utilizator șters ❌");
+        setMessage("Utilizator șters ");
         getUsers();
       } else setMessage(data.message);
     } catch (err) {
@@ -129,7 +128,7 @@ function UserManager() {
     }
   };
 
-  // 🔁 Când tokenul se schimbă, se încarcă automat utilizatorii
+  //  Când tokenul se schimbă, se încarcă automat utilizatorii
   useEffect(() => {
     console.log("🔑 Token curent:", token);
     if (token) getUsers();
@@ -232,7 +231,7 @@ function UserManager() {
                       onClick={() => deleteUser(u.id)}
                       className="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600"
                     >
-                      🗑️ Șterge
+                       Șterge
                     </button>
                   </td>
                 </tr>

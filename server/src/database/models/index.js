@@ -4,7 +4,7 @@ const Flight = require("./flight");
 const Booking = require("./booking");
 const Cart = require("./cart");
 
-// 🔹 Definim relațiile
+// Definim relațiile
 User.hasMany(Booking, { foreignKey: "user_id" });
 Booking.belongsTo(User, { foreignKey: "user_id" });
 

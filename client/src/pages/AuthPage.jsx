@@ -32,7 +32,7 @@ function AuthPage() {
         if (isLogin && data.token) {
           localStorage.setItem("token", data.token);
           setToken(data.token);
-          setMessage("Autentificare reușită ✅");
+          setMessage("Autentificare reușită ");
           navigate("/");
         } else {
           setMessage("Cont creat cu succes! Acum te poți autentifica.");
@@ -42,7 +42,7 @@ function AuthPage() {
         setMessage(data.message || "Eroare la autentificare.");
       }
     } catch (err) {
-      console.error("❌ Eroare la trimiterea cererii:", err);
+      console.error(" Eroare la trimiterea cererii:", err);
       setMessage("Eroare de rețea sau server indisponibil.");
     }
   };
@@ -97,7 +97,7 @@ function AuthPage() {
           </form>
         ) : (
           <div className="text-center">
-            <p className="text-green-600 mb-4">Ești autentificat ✅</p>
+            <p className="text-green-600 mb-4">Ești autentificat </p>
             <button
               onClick={logout}
               className="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600"

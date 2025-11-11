@@ -23,7 +23,7 @@ function Homepage() {
           setUser(null);
         }
       } catch (err) {
-        console.error("❌ Eroare la verificarea userului:", err);
+        console.error(" Eroare la verificarea userului:", err);
       }
     };
 
@@ -45,7 +45,7 @@ function Homepage() {
       </h1>
 
       <div className="flex flex-col md:flex-row flex-wrap gap-6 justify-center">
-        {/* 🔹 Vizibil tuturor */}
+        {/*  Vizibil tuturor */}
         <button
           onClick={() => navigate("/flights")}
           className="bg-blue-600 text-white px-8 py-4 rounded-2xl text-lg font-semibold hover:bg-blue-700 transition-all shadow-md"
@@ -53,58 +53,58 @@ function Homepage() {
           🔍 Caută zboruri
         </button>
 
-        {/* 🔹 Dacă nu e logat */}
+        {/* Dacă nu e logat */}
         {!loggedIn ? (
           <button
             onClick={() => navigate("/auth")}
             className="bg-green-600 text-white px-8 py-4 rounded-2xl text-lg font-semibold hover:bg-green-700 transition-all shadow-md"
           >
-            🔑 Autentificare
+             Autentificare
           </button>
         ) : (
           <>
-            {/* 🔹 Dacă e admin */}
+            {/*  Dacă e admin */}
             {user?.role === "admin" ? (
               <>
                 <button
                   onClick={() => navigate("/users")}
                   className="bg-indigo-500 text-white px-8 py-4 rounded-2xl text-lg font-semibold hover:bg-indigo-600 transition-all shadow-md"
                 >
-                  👥 Operații CRUD Utilizatori
+                   Operații CRUD Utilizatori
                 </button>
 
                 <button
                   onClick={() => navigate("/flights-manager")}
                   className="bg-blue-500 text-white px-8 py-4 rounded-2xl text-lg font-semibold hover:bg-blue-600 transition-all shadow-md"
                 >
-                  ✈️ Operații CRUD Zboruri
+                  Operații CRUD Zboruri
                 </button>
               </>
             ) : (
               <>
-                {/* 🔹 Dacă e utilizator normal */}
+                {/* Dacă e utilizator normal */}
                 <button
                   onClick={() => navigate("/cart")}
                   className="bg-yellow-500 text-white px-8 py-4 rounded-2xl text-lg font-semibold hover:bg-yellow-600 transition-all shadow-md"
                 >
-                  🛒 Coșul meu
+                  Coșul meu
                 </button>
 
                 <button
                   onClick={() => navigate("/bookings")}
                   className="bg-purple-500 text-white px-8 py-4 rounded-2xl text-lg font-semibold hover:bg-purple-600 transition-all shadow-md"
                 >
-                  📦 Comenzile mele
+                   Comenzile mele
                 </button>
               </>
             )}
 
-            {/* 🔴 Logout comun pentru toți */}
+            {/*  Logout comun pentru toți */}
             <button
               onClick={handleLogout}
               className="bg-red-500 text-white px-8 py-4 rounded-2xl text-lg font-semibold hover:bg-red-600 transition-all shadow-md"
             >
-              🔒 Logout
+               Logout
             </button>
           </>
         )}

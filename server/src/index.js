@@ -36,12 +36,12 @@ app.get("/", async (req, res) => {
   try {
     const users = await User.findAll();
     res.status(200).json({
-      message: "Baza de date funcționează! ✅",
+      message: "Baza de date funcționează! ",
       totalUsers: users.length,
       users,
     });
   } catch (err) {
-    console.error("❌ Eroare la testul DB:", err);
+    console.error(" Eroare la testul DB:", err);
     res.status(500).json({ message: "Eroare DB", error: err.message });
   }
 });
@@ -50,14 +50,14 @@ app.get("/", async (req, res) => {
 (async () => {
   try {
     await sequelize.authenticate();
-    console.log("✅ Conectare la baza de date reușită.");
+    console.log("Conectare la baza de date reușită.");
     await sequelize.sync(); // poți adăuga { alter: true } dacă vrei să ajusteze automat tabelele
-    console.log("✅ Models synced successfully.");
+    console.log(" Models synced successfully.");
 
     app.listen(PORT, () => {
-      console.log(`🚀 Server successfully started on port ${PORT}`);
+      console.log(` Server successfully started on port ${PORT}`);
     });
   } catch (err) {
-    console.error("❌ Eroare la pornirea serverului:", err);
+    console.error(" Eroare la pornirea serverului:", err);
   }
 })();
