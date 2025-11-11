@@ -12,7 +12,11 @@ function Homepage() {
 
       try {
         const res = await fetch("http://localhost:3000/auth/check", {
-          headers: { Authorization: `Bearer ${token}` },
+          headers: { 
+            Authorization: `Bearer ${token}`,
+            "Cache-Control": "no-cache",
+            Pragma: "no-cache",
+          },
         });
         const data = await res.json();
 
@@ -23,7 +27,8 @@ function Homepage() {
           setUser(null);
         }
       } catch (err) {
-        console.error(" Eroare la verificarea userului:", err);
+        console.error("Eroare la verificarea userului:", err);
+        setUser(null);
       }
     };
 
@@ -37,6 +42,7 @@ function Homepage() {
   };
 
   const loggedIn = !!token && !!user;
+  const isAdmin = user?.role === "admin";
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-b from-blue-50 to-blue-100 p-8">
@@ -53,48 +59,50 @@ function Homepage() {
           🔍 Caută zboruri
         </button>
 
-        {/* Dacă nu e logat */}
+        {/*  Dacă nu e logat */}
         {!loggedIn ? (
           <button
             onClick={() => navigate("/auth")}
             className="bg-green-600 text-white px-8 py-4 rounded-2xl text-lg font-semibold hover:bg-green-700 transition-all shadow-md"
           >
-             Autentificare
+            Autentificare
           </button>
         ) : (
           <>
-            {/*  Dacă e admin */}
-            {user?.role === "admin" ? (
+            {/* 🔹 Vizibil doar pentru ADMIN */}
+            {isAdmin && (
               <>
                 <button
                   onClick={() => navigate("/users")}
                   className="bg-indigo-500 text-white px-8 py-4 rounded-2xl text-lg font-semibold hover:bg-indigo-600 transition-all shadow-md"
                 >
-                   Operații CRUD Utilizatori
+                  👥 CRUD Utilizatori
                 </button>
 
                 <button
                   onClick={() => navigate("/flights-manager")}
                   className="bg-blue-500 text-white px-8 py-4 rounded-2xl text-lg font-semibold hover:bg-blue-600 transition-all shadow-md"
                 >
-                  Operații CRUD Zboruri
+                  ✈️ CRUD Zboruri
                 </button>
               </>
-            ) : (
+            )}
+
+            {/* 🔹 Vizibil doar pentru USER normal */}
+            {!isAdmin && (
               <>
-                {/* Dacă e utilizator normal */}
                 <button
                   onClick={() => navigate("/cart")}
                   className="bg-yellow-500 text-white px-8 py-4 rounded-2xl text-lg font-semibold hover:bg-yellow-600 transition-all shadow-md"
                 >
-                  Coșul meu
+                  🛒 Coșul meu
                 </button>
 
                 <button
                   onClick={() => navigate("/bookings")}
                   className="bg-purple-500 text-white px-8 py-4 rounded-2xl text-lg font-semibold hover:bg-purple-600 transition-all shadow-md"
                 >
-                   Comenzile mele
+                  📦 Comenzile mele
                 </button>
               </>
             )}
@@ -104,17 +112,13 @@ function Homepage() {
               onClick={handleLogout}
               className="bg-red-500 text-white px-8 py-4 rounded-2xl text-lg font-semibold hover:bg-red-600 transition-all shadow-md"
             >
-               Logout
+              🚪 Logout
             </button>
           </>
         )}
       </div>
 
-      <p className="mt-10 text-gray-600 text-center max-w-lg">
-        Poți căuta liber zboruri fără autentificare.  
-        Dacă vrei să gestionezi utilizatori sau zboruri, intră ca admin.  
-        Dacă ești client, poți accesa coșul și comenzile tale.
-      </p>
+     
     </div>
   );
 }

@@ -5,11 +5,18 @@ function AuthPage() {
   const navigate = useNavigate();
 
   const [isLogin, setIsLogin] = useState(true);
-  const [email, setEmail] = useState("");
+  const [email, setEmail] = useState(""); 
   const [password, setPassword] = useState("");
   const [name, setName] = useState("");
   const [message, setMessage] = useState("");
   const [token, setToken] = useState(localStorage.getItem("token") || null);
+
+  useEffect(() => {
+
+    setEmail("");
+    setPassword("");
+    setName("");
+  }, [isLogin]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -37,6 +44,10 @@ function AuthPage() {
         } else {
           setMessage("Cont creat cu succes! Acum te poți autentifica.");
           setIsLogin(true);
+        
+          setEmail("");
+          setPassword("");
+          setName("");
         }
       } else {
         setMessage(data.message || "Eroare la autentificare.");
@@ -61,7 +72,11 @@ function AuthPage() {
         </h1>
 
         {!token ? (
-          <form onSubmit={handleSubmit} className="space-y-4">
+          <form
+            onSubmit={handleSubmit}
+            className="space-y-4"
+            
+          >
             {!isLogin && (
               <input
                 type="text"
@@ -70,6 +85,7 @@ function AuthPage() {
                 onChange={(e) => setName(e.target.value)}
                 className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-400"
                 required
+                autoComplete="off"
               />
             )}
             <input
@@ -79,6 +95,7 @@ function AuthPage() {
               onChange={(e) => setEmail(e.target.value)}
               className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-400"
               required
+              autoComplete="off" 
             />
             <input
               type="password"
@@ -87,6 +104,7 @@ function AuthPage() {
               onChange={(e) => setPassword(e.target.value)}
               className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-400"
               required
+              autoComplete="new-password" 
             />
             <button
               type="submit"

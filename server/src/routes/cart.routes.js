@@ -88,7 +88,7 @@ router.get("/", verifyToken, async (req, res) => {
       order: [["created_at", "DESC"]],
     });
 
-    console.log(`🧾 ${cartItems.length} zbor(uri) găsit(e) în coș pentru user ${userId}`);
+    console.log(` ${cartItems.length} zbor(uri) găsit(e) în coș pentru user ${userId}`);
 
     res.json({
       success: true,

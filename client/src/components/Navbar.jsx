@@ -60,7 +60,7 @@ function Navbar() {
             </Link>
             {userName ? (
               <span className="font-semibold text-yellow-300">
-                {userName}!
+                {userName}
               </span>
             ) : (
               <span className="italic text-gray-300">Se încarcă...</span>

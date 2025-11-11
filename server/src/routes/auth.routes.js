@@ -28,7 +28,7 @@ const router = express.Router();
   }
 })();
 
-// 🔹 REGISTER
+// REGISTER
 router.post("/register", async (req, res) => {
   try {
     const { name, email, password } = req.body;
@@ -76,7 +76,7 @@ router.post("/register", async (req, res) => {
   }
 });
 
-// 🔹 LOGIN
+// LOGIN
 router.post("/login", async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -95,7 +95,7 @@ router.post("/login", async (req, res) => {
 
     console.log(" TOKEN_SECRET la LOGIN:", process.env.TOKEN_SECRET);
 
-    // ✅ Token valabil 7 zile
+    // Token valabil 7 zile
     const token = jwt.sign(
       { id: user.id, role: user.role },
       process.env.TOKEN_SECRET,
@@ -118,9 +118,9 @@ router.post("/login", async (req, res) => {
   }
 });
 
-// 🔹 CHECK — verificare token JWT
+// CHECK — verificare token JWT
 router.get("/check", async (req, res) => {
-  // ✅ dezactivează cache-ul pentru a preveni răspunsurile 304
+  // dezactivează cache-ul pentru a preveni răspunsurile 304
   res.set("Cache-Control", "no-store");
 
   try {
@@ -154,7 +154,7 @@ router.get("/check", async (req, res) => {
   }
 });
 
-// 🔹 ALL USERS (debug)
+//  ALL USERS (debug)
 router.get("/all", async (req, res) => {
   try {
     const users = await User.findAll({ order: [["created_at", "DESC"]] });
